@@ -76,6 +76,18 @@ export class MQTTService {
             clearTimeout(timeoutId);
             hasResolved = true;
             console.log('Connected to MQTT broker');
+            
+            // 如果已经设置了消息回调，立即设置监听器
+            if (this.messageCallback) {
+              console.log('连接成功，设置消息监听器');
+              this.client?.on('message', (topic, message) => {
+                console.log('📩 收到 MQTT 消息:', topic, message.toString());
+                if (this.messageCallback) {
+                  this.messageCallback(topic, message.toString());
+                }
+              });
+            }
+            
             resolve();
           }
         });
